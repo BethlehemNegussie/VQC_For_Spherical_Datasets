@@ -1,5 +1,4 @@
-# Ignoring the enviroment file
-.venv/
-src/vqc_spherical/__pycache__/
-tests/
-# Ignoring the 
+
+data/*.npz
+
+data/*.npz
