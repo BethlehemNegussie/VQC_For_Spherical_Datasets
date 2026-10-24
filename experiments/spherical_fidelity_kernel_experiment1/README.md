@@ -1,12 +1,14 @@
 # Spherical Fidelity Kernel — Experiment 1
 
+## Overview
+
 This experiment investigates how the spectral support of a spherical fidelity kernel affects the recovery of spherical-harmonic functions on the unit sphere, \(S^2\).
 
 The kernel is
 
-\[
+$$
 k_n(x,y)=\left(\frac{1+x\cdot y}{2}\right)^n,
-\]
+$$
 
 where \(x,y\in S^2\), and \(n\) is both the number of copies of the encoded single-qubit state and the total number of qubits used by the overlap circuit.
 
@@ -32,15 +34,17 @@ This comparison validates the implementation of the ideal kernel; it does not de
 
 The default settings are:
 
-- **Kernel copies / qubits (`n`):** 1, 2, 4, 8
-- **Target degrees (`ell`):** Every integer from 0 through 10
-- **Training sizes (`N`):** 32, 64, 128, 256
-- **Ridge regularization (`tau`):** \(10^{-5}, 10^{-4}, 10^{-3}, 10^{-2}, 10^{-1}\)
-- **Target families:** Zonal harmonics and random real-harmonic combinations
-- **Training seeds:** 20
-- **Independent random target realizations:** 3 per degree for the random-harmonic family
-- **Fixed held-out test set:** 1,000 points on \(S^2\)
-- **Fixed validation set:** 400 points on \(S^2\)
+| Parameter | Default settings |
+|---|---|
+| Kernel copies / qubits (\(n\)) | 1, 2, 4, 8 |
+| Target degrees (\(\ell\)) | Every integer from 0 through 10 |
+| Training sizes (\(N\)) | 32, 64, 128, 256 |
+| Ridge regularization (\(\tau\)) | \(10^{-5}, 10^{-4}, 10^{-3}, 10^{-2}, 10^{-1}\) |
+| Target families | Zonal harmonics and random real-harmonic combinations |
+| Training seeds | 20 |
+| Independent random target realizations | 3 per degree for the random-harmonic family |
+| Fixed held-out test set | 1,000 points on \(S^2\) |
+| Fixed validation set | 400 points on \(S^2\) |
 
 For a given seed and training-set size, the training points are shared across kernel copy counts and model families. The validation and test sets remain fixed across the grid. Each zonal target is evaluated once per degree, while the random-harmonic family uses multiple independent coefficient realizations.
 
@@ -48,13 +52,13 @@ For a given seed and training-set size, the training points are shared across ke
 
 The spherical-harmonic eigenvalues of the kernel follow this expression:
 
-\[
-\lambda_\ell^{(n)}=
+$$
+\lambda_\ell^{(n)} =
 \begin{cases}
-\dfrac{(n!)^2}{(n-\ell)!(n+\ell+1)!}, & 0\leq\ell\leq n,\\[6pt]
-0, & \ell>n.
+\dfrac{(n!)^2}{(n-\ell)!(n+\ell+1)!}, & 0 \leq \ell \leq n,\\[6pt]
+0, & \ell > n.
 \end{cases}
-\]
+$$
 
 The exact kernel therefore has spectral support only through harmonic degree \(n\). Harmonic components above \(n\) lie outside its function space. However, a nonzero eigenvalue for \(\ell\leq n\) does not guarantee easy recovery: higher supported degrees can have very small eigenvalues, making them harder to learn under finite sampling and regularization.
 
@@ -96,9 +100,9 @@ The experiment distinguishes between **representational support** and **learnabi
 
 The synthetic targets make it possible to isolate spectral effects under controlled conditions, but the findings do not automatically generalize to real-world spherical datasets.
 
-## Installation and Testing (Windows PowerShell)
+## Installation and Testing
 
-From the `spherical_fidelity_kernel_experiment1` directory, run:
+The following commands are intended for Windows PowerShell. Run them from the `spherical_fidelity_kernel_experiment1` directory.
 
 ```powershell
 python -m pip install -r requirements.txt
@@ -107,25 +111,27 @@ python -m pytest
 
 ## Running the Experiments
 
-**Run the analytic circuit-validation pilot:**
+### Run the analytic circuit-validation pilot
 
 ```powershell
 python -m experiments.experiment_1 --pilot
 ```
 
-**Run a lightweight smoke test** (to check that the code runs, not to produce final results):
+### Run a lightweight smoke test
+
+This checks that the code runs; it is not intended to produce final results.
 
 ```powershell
 python -m experiments.experiment_1 --quick
 ```
 
-**Run the full default grid:**
+### Run the full default grid
 
 ```powershell
 python -m experiments.experiment_1
 ```
 
-**Optional flags:**
+### Optional flags
 
 ```powershell
 python -m experiments.experiment_1 --no-quantum
@@ -144,16 +150,28 @@ Using `--no-quantum` skips the analytic circuit pilot while leaving the main exa
 - The main grid uses the closed-form expression for an ideal quantum fidelity kernel. The PennyLane pilot uses an analytic simulator, not physical quantum hardware.
 - This experiment studies kernel expressivity and recoverability; it does not assess quantum advantage or hardware performance.
 
-
 ## Project Layout
 
 ```text
 spherical_fidelity_kernel_experiment1/
 ├── experiments/
+│   ├── __init__.py
 │   └── experiment_1.py
-├── src/                  # kernel, sphere sampling, targets, spectrum, metrics
+├── src/
+│   ├── __init__.py
+│   ├── kernel.py
+│   ├── metrics.py
+│   ├── quantum_kernel.py
+│   ├── regression.py
+│   ├── spectrum.py
+│   ├── sphere.py
+│   └── targets.py
 ├── tests/
-├── results/               # output files from runs
+│   └── test_foundations.py
+├── .gitignore
+├── pytest.ini
 ├── README.md
 └── requirements.txt
 ```
+
+The `results/` directory is generated when experiments are run and is not included in the committed project layout by default.
